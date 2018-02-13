@@ -8,19 +8,24 @@
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1"
   },
+  "devDependencies": {
+    "jest": "^22.2.2",
+    "node-sass": "^4.7.2",
+    "npm-run-all": "^4.1.2",
+    "rename-cli": "^5.0.0"
+  },
   "scripts": {
-    "dev": "react-scripts start",
-    "build": "react-scripts build",
-    "postbuild":
-      "./node_modules/.bin/rename build/index.html build/shorten.html",
+    "dev:css": "npm run build:css && node-sass src/ -o src/ --watch --recursive",
+    "dev:scripts": "react-scripts start",
+    "dev": "npm-run-all -p dev:css dev:scripts",
+    "build:css": "node-sass src/ -o src/",
+    "build:scripts": "react-scripts build",
+    "build": "npm-run-all build:css build:scripts",
+    "postbuild": "./node_modules/.bin/rename build/index.html build/shorten.html",
     "predeploy": "npm run build",
     "deploy": "firebase deploy",
     "test": "jest",
-    "eject": "react-scripts eject"
-  },
-  "devDependencies": {
-    "jest": "^22.2.2",
-    "npm-run-all": "^4.1.2",
-    "rename-cli": "^5.0.0"
+    "eject": "react-scripts eject",
+    "clean": "rimraf src/**/*.css build"
   }
 }

@@ -2,30 +2,41 @@
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: center; }
-  .app .url-form {
+  justify-content: center;
+
+  .url-form {
     background-color: #ccc;
     min-width: 50%;
     margin: 0 5%;
-    padding: 50px; }
-  .app .url-label {
+    padding: 50px;
+  }
+
+  .url-label {
     display: block;
     margin-bottom: 6px;
-    margin-left: 3px; }
-  .app .url-input {
+    margin-left: 3px;
+  }
+
+  .url-input {
     line-height: 24px;
     font-size: 20px;
     padding: 3px;
     width: 100%;
-    box-sizing: border-box; }
-  .app .url-submit {
+    box-sizing: border-box;
+  }
+
+  .url-submit {
     display: block;
     border: none;
     margin: 12px auto 0;
     font-size: 1rem;
-    padding: 6px 12px; }
-  .app .url-result,
-  .app .url-error {
+    padding: 6px 12px;
+  }
+
+  .url-result,
+  .url-error {
     margin: 24px 0 0;
     text-align: center;
-    line-height: 1.5; }
+    line-height: 1.5;
+  }
+}
