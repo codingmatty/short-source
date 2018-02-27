@@ -24,6 +24,8 @@
     "postbuild": "./node_modules/.bin/rename build/index.html build/shorten.html",
     "predeploy": "npm run build",
     "deploy": "firebase deploy",
+    "preserve": "npm run build",
+    "serve": "firebase serve --only functions,hosting",
     "test": "jest",
     "eject": "react-scripts eject",
     "clean": "rimraf src/**/*.css build"

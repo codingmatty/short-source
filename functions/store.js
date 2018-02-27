@@ -6,6 +6,7 @@ const INDEX_BASE = 5000;
 const db = admin.firestore();
 
 const urls = db.collection('urls');
+const visits = db.collection('visits');
 
 const getCounter = ({ increment = true } = {}) => {
   return db.runTransaction((transaction) =>
@@ -50,4 +51,8 @@ exports.getUrl = (path) => {
     .doc(path)
     .get()
     .then((doc) => doc.exists && doc.data().url);
+};
+
+exports.recordVisit = (data) => {
+  return visits.add(data);
 };
