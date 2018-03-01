@@ -3,16 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "lodash": "^4.17.5",
     "react": "^16.2.0",
     "react-autobind": "^1.0.6",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1"
   },
   "devDependencies": {
+    "husky": "^0.14.3",
     "jest": "^22.2.2",
+    "lint-staged": "^7.0.0",
     "node-sass": "^4.7.2",
     "nodemon": "^1.17.1",
     "npm-run-all": "^4.1.2",
+    "prettier": "^1.11.1",
     "rename-cli": "^5.0.0"
   },
   "scripts": {
@@ -31,6 +35,14 @@
     "serve": "npm-run-all -p watch fb:serve",
     "test": "jest",
     "eject": "react-scripts eject",
-    "clean": "rimraf src/**/*.css build"
+    "clean": "rimraf src/**/*.css build",
+    "precommit": "lint-staged"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "arrowParens": "always"
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": ["prettier --write", "git add"]
   }
 }

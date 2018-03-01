@@ -19,6 +19,10 @@
         "function": "shorten"
       },
       {
+        "source": "/api/stats",
+        "function": "stats"
+      },
+      {
         "source": "/shorten",
         "destination": "/shorten.html"
       },

@@ -56,3 +56,10 @@ exports.getUrl = (path) => {
 exports.recordVisit = (data) => {
   return visits.add(data);
 };
+
+exports.getVisits = (slug) => {
+  return visits
+    .where('path', '==', slug)
+    .get()
+    .then(({ docs }) => docs.map((doc) => doc.data()));
+};

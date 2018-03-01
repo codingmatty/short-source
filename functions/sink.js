@@ -15,12 +15,12 @@ module.exports = (req, res) => {
   }
 
   getUrl(path)
-    .then(url => {
+    .then((url) => {
       const urlToRedirectTo = url || config.default;
       res.redirect(urlToRedirectTo);
       return urlToRedirectTo;
     })
-    .then(urlToRedirectTo => {
+    .then((urlToRedirectTo) => {
       const { query, ip } = req;
       const location = geoip.lookup(ip);
 
@@ -28,7 +28,7 @@ module.exports = (req, res) => {
       const userAgent = uaParser(ua);
 
       const visitData = {
-        date: new Date(),
+        date: new Date(new Date().toDateString()), // Store only the UTC date
         ip,
         location,
         path,
@@ -51,7 +51,7 @@ module.exports = (req, res) => {
 
       recordVisit(recordData);
     })
-    .catch(error => {
+    .catch((error) => {
       console.error(error);
       res.status(500).send({ error: error.message || error });
     });
