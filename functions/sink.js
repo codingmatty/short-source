@@ -6,6 +6,7 @@ const config = require('./config');
 const { getUrl, recordVisit } = require('./store');
 
 module.exports = (req, res) => {
+  req.app.enable('trust proxy'); // For the IP
   const path = req.path.slice(1);
 
   if (!path) {
@@ -14,14 +15,13 @@ module.exports = (req, res) => {
   }
 
   getUrl(path)
-    .then((url) => {
+    .then(url => {
       const urlToRedirectTo = url || config.default;
-
-      const ip = req.headers['x-forwarded-for']
-        ? req.headers['x-forwarded-for'].split(',').shift()
-        : req.connection.remoteAddress ||
-          req.socket.remoteAddress ||
-          (req.connection.socket ? req.connection.socket.remoteAddress : null);
+      res.redirect(urlToRedirectTo);
+      return urlToRedirectTo;
+    })
+    .then(urlToRedirectTo => {
+      const { query, ip } = req;
       const location = geoip.lookup(ip);
 
       const ua = req.headers['user-agent'];
@@ -32,28 +32,26 @@ module.exports = (req, res) => {
         ip,
         location,
         path,
-        userAgent,
-        url: urlToRedirectTo
+        query,
+        url: urlToRedirectTo,
+        userAgent
       };
       const flattenedData = flatten(visitData);
 
       console.log('Data to Record: ', flattenedData);
 
-      const recordData = {};
-      Object.keys(flattenedData)
-        .filter((key) => flattenedData[key])
-        .forEach((key) => {
-          recordData[key] = flattenedData[key];
-        });
+      const recordData = flatten.unflatten(
+        Object.keys(flattenedData).reduce((obj, key) => {
+          if (flattenedData[key]) {
+            obj[key] = flattenedData[key];
+          }
+          return obj;
+        }, {})
+      );
 
-      recordVisit(flatten.unflatten(recordData));
-
-      return urlToRedirectTo;
+      recordVisit(recordData);
     })
-    .then((url) => {
-      res.redirect(url);
-    })
-    .catch((error) => {
+    .catch(error => {
       console.error(error);
       res.status(500).send({ error: error.message || error });
     });

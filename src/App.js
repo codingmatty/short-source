@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import autobind from 'react-autobind';
-import logo from './logo.svg';
 import './app.css';
 
 class App extends Component {
