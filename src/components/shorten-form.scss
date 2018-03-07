@@ -1,0 +1,35 @@
+.shorten-form {
+  background-color: #ccc;
+  min-width: 50%;
+  margin: 0 5%;
+  padding: 50px;
+
+  &__label {
+    display: block;
+    margin-bottom: 6px;
+    margin-left: 3px;
+  }
+
+  &__input {
+    line-height: 24px;
+    font-size: 20px;
+    padding: 3px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  &__submit {
+    display: block;
+    border: none;
+    margin: 12px auto 0;
+    font-size: 1rem;
+    padding: 6px 12px;
+  }
+
+  &__result,
+  &__error {
+    margin: 24px 0 0;
+    text-align: center;
+    line-height: 1.5;
+  }
+}

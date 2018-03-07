@@ -23,12 +23,12 @@
         "function": "stats"
       },
       {
-        "source": "/shorten",
-        "destination": "/shorten.html"
+        "source": "/app",
+        "destination": "/app.html"
       },
       {
-        "source": "/shorten/**",
-        "destination": "/shorten.html"
+        "source": "/app/**",
+        "destination": "/app.html"
       },
       {
         "source": "**",

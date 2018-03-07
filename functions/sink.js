@@ -1,12 +1,14 @@
-const geoip = require('geoip-lite');
 const flatten = require('flat');
+const geoip = require('geoip-lite');
 const uaParser = require('ua-parser-js');
 
 const config = require('./config');
 const { getUrl, recordVisit } = require('./store');
 
 module.exports = (req, res) => {
+  req.app.set('case sensitive routing', true);
   req.app.enable('trust proxy'); // For the IP
+
   const path = req.path.slice(1);
 
   if (!path) {
@@ -28,7 +30,7 @@ module.exports = (req, res) => {
       const userAgent = uaParser(ua);
 
       const visitData = {
-        date: new Date(new Date().toDateString()), // Store only the UTC date
+        date: new Date().toISOString(),
         ip,
         location,
         path,

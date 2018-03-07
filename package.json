@@ -4,10 +4,13 @@
   "private": true,
   "dependencies": {
     "lodash": "^4.17.5",
+    "moment": "^2.21.0",
     "react": "^16.2.0",
     "react-autobind": "^1.0.6",
     "react-dom": "^16.2.0",
-    "react-scripts": "1.1.1"
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.1.1",
+    "recharts": "^1.0.0-beta.10"
   },
   "devDependencies": {
     "husky": "^0.14.3",
@@ -27,22 +30,30 @@
     "build:css": "node-sass src/ -o src/",
     "build:scripts": "react-scripts build",
     "build": "npm-run-all build:css build:scripts",
-    "watch": "nodemon --watch src --exec \"npm run build\"",
-    "postbuild": "./node_modules/.bin/rename build/index.html build/shorten.html",
+    "postbuild": "./node_modules/.bin/rename build/index.html build/app.html",
     "predeploy": "npm run build",
     "deploy": "firebase deploy",
-    "fb:serve": "firebase serve --only functions,hosting",
-    "serve": "npm-run-all -p watch fb:serve",
+    "fb:serve": "firebase serve --only functions",
+    "serve": "npm-run-all -p dev fb:serve",
     "test": "jest",
     "eject": "react-scripts eject",
     "clean": "rimraf src/**/*.css build",
     "precommit": "lint-staged"
+  },
+  "proxy": {
+    "/api": {
+      "target": "http://localhost:5000/short-source/us-central1/",
+      "pathRewrite": { "^/api" : "" }
+    }
   },
   "prettier": {
     "singleQuote": true,
     "arrowParens": "always"
   },
   "lint-staged": {
-    "*.{js,json,css,md}": ["prettier --write", "git add"]
+    "*.{js,json,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
