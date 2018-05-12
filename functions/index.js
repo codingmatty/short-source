@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 
-const shorten = require('./shorten');
-const sink = require('./sink');
-const stats = require('./stats');
+const shorten = require('./handlers/shorten');
+const sink = require('./handlers/sink');
+const stats = require('./handlers/stats');
 
 exports.ping = functions.https.onRequest((req, res) => {
   res.send('pong');

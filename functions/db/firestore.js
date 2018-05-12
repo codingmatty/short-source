@@ -1,5 +1,6 @@
-const admin = require('./admin');
-const { encode } = require('./hasher');
+const admin = require('../helpers/admin');
+const { encode } = require('../helpers/hasher');
+const logger = require('../helpers/logger');
 
 const INDEX_BASE = 5000;
 
@@ -23,7 +24,7 @@ const getCounter = ({ increment = true } = {}) => {
         }
       })
       .catch((error) => {
-        console.error(error);
+        logger.error(error);
         return Promise.reject(error);
       })
   );
@@ -33,7 +34,7 @@ const getIndex = (options) => {
   return getCounter(options).then((value) => value + INDEX_BASE);
 };
 
-exports.storeUrl = (url) => {
+function storeUrl(url) {
   return getIndex().then((index) => {
     const data = {
       url,
@@ -44,22 +45,29 @@ exports.storeUrl = (url) => {
       .set(data)
       .then(() => data);
   });
-};
+}
 
-exports.getUrl = (path) => {
+function getUrl(path) {
   return urls
     .doc(path)
     .get()
     .then((doc) => doc.exists && doc.data().url);
-};
+}
 
-exports.recordVisit = (data) => {
+function recordVisit(data) {
   return visits.add(data);
-};
+}
 
-exports.getVisits = (slug) => {
+function getVisits(slug) {
   return visits
     .where('path', '==', slug)
     .get()
     .then(({ docs }) => docs.map((doc) => doc.data()));
+}
+
+module.exports = {
+  storeUrl,
+  getUrl,
+  recordVisit,
+  getVisits
 };

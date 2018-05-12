@@ -2,10 +2,12 @@ const flatten = require('flat');
 const geoip = require('geoip-lite');
 const uaParser = require('ua-parser-js');
 
-const config = require('./config');
-const { getUrl, recordVisit } = require('./store');
+const config = require('../config');
+const logger = require('../helpers/logger');
+const initializeDb = require('../db/initialize');
+const { getUrl, recordVisit } = initializeDb();
 
-module.exports = (req, res) => {
+function sink(req, res) {
   req.app.set('case sensitive routing', true);
   req.app.enable('trust proxy'); // For the IP
 
@@ -40,7 +42,7 @@ module.exports = (req, res) => {
       };
       const flattenedData = flatten(visitData);
 
-      console.log('Data to Record: ', flattenedData);
+      logger.log('Data to Record: ', flattenedData);
 
       const recordData = flatten.unflatten(
         Object.keys(flattenedData).reduce((obj, key) => {
@@ -54,7 +56,9 @@ module.exports = (req, res) => {
       recordVisit(recordData);
     })
     .catch((error) => {
-      console.error(error);
+      logger.error(error);
       res.status(500).send({ error: error.message || error });
     });
-};
+}
+
+module.exports = sink;

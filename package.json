@@ -16,6 +16,7 @@
     "husky": "^0.14.3",
     "jest": "^22.2.2",
     "lint-staged": "^7.0.0",
+    "lowdb": "^1.0.0",
     "node-sass": "^4.7.2",
     "nodemon": "^1.17.1",
     "npm-run-all": "^4.1.2",
@@ -42,8 +43,10 @@
   },
   "proxy": {
     "/api": {
-      "target": "http://localhost:5000/short-source/us-central1/",
-      "pathRewrite": { "^/api" : "" }
+      "target": "http://localhost:5000/moniker-app/us-central1/",
+      "pathRewrite": {
+        "^/api": ""
+      }
     }
   },
   "prettier": {
