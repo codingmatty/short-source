@@ -16,12 +16,12 @@
     "husky": "^0.14.3",
     "jest": "^22.2.2",
     "lint-staged": "^7.0.0",
-    "lowdb": "^1.0.0",
     "node-sass": "^4.7.2",
     "nodemon": "^1.17.1",
     "npm-run-all": "^4.1.2",
     "prettier": "^1.11.1",
-    "rename-cli": "^5.0.0"
+    "rename-cli": "^5.0.0",
+    "sinon": "^5.0.7"
   },
   "scripts": {
     "postinstall": "cd functions;npm install;cd ..",
@@ -36,7 +36,8 @@
     "deploy": "firebase deploy",
     "fb:serve": "firebase serve --only functions",
     "serve": "npm-run-all -p dev fb:serve",
-    "test": "jest",
+    "test": "jest --coverage",
+    "tdd": "jest --coverage --watch",
     "eject": "react-scripts eject",
     "clean": "rimraf src/**/*.css build",
     "precommit": "lint-staged"

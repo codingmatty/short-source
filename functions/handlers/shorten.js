@@ -1,29 +1,27 @@
 const config = require('../config');
-const logger = require('../helpers/logger');
+const errors = require('../helpers/errors');
 const initializeDb = require('../db/initialize');
-const { storeUrl } = initializeDb();
+const db = initializeDb();
 
 const validUrlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[.!/\\\w]*))?)/;
 
 function shorten(req, res) {
-  const { body, query } = req;
-  let url = body.url || query.url;
+  const { body = {}, query = {} } = req;
+  const url = body.url || query.url;
 
   if (!url || !validUrlRegex.test(url)) {
     res
       .status(400)
       .send({ error: 'You must send a valid url to be shortened.' });
-    return;
+    return Promise.resolve();
   }
 
-  storeUrl(url)
+  return db
+    .storeUrl(url)
     .then(({ slug }) => {
       res.send({ url: `${config.short}/${slug}` });
     })
-    .catch((error) => {
-      logger.error(error);
-      res.status(500).send({ error: error.message || error });
-    });
+    .catch(errors.handle(res));
 }
 
 module.exports = shorten;

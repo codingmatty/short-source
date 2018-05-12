@@ -1,13 +1,19 @@
 const { isDev, isTest } = require('../helpers/env');
 
+let db = null;
+
 function initializeDb() {
+  if (db) {
+    return db;
+  }
   if (isTest) {
-    return require('./memory');
+    db = require('./memory');
+  } else if (isDev) {
+    db = require('./lowdb');
+  } else {
+    db = require('./firstore');
   }
-  if (isDev) {
-    return require('./lowdb');
-  }
-  return require('./firstore');
+  return db;
 }
 
 module.exports = initializeDb;

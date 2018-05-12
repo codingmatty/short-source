@@ -12,13 +12,10 @@ function storeUrl(url) {
     slug: encode(index++)
   };
   links.push(link);
-  console.log('links: ', links);
   return Promise.resolve(link);
 }
 
 function getUrl(path) {
-  console.log('links: ', links);
-  console.log('path: ', path);
   const link = links.find(({ slug }) => slug === path);
   return Promise.resolve(link ? link.url : '');
 }
