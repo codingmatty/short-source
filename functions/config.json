@@ -1,4 +1,4 @@
 {
-  "default": "https://www.matthewjacobs.io",
-  "short": "https://test.maj.sh"
+  "defaultDestination": "https://www.matthewjacobs.io",
+  "shortDomain": "https://test.maj.sh"
 }

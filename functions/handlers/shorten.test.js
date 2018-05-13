@@ -1,44 +1,45 @@
 const { Request, Response } = require('reqresnext');
-const sinon = require('sinon');
 
 const shorten = require('./shorten');
-const { short } = require('../config');
+const { shortDomain } = require('../config');
 const errors = require('../helpers/errors');
 const initializeDb = require('../db/initialize');
 const db = initializeDb();
 
 describe('shorten', () => {
-  let res, storeUrlStub, errorHandlerMock;
+  let res, storeUrlSpy, errorHandlerMock;
 
   beforeEach(() => {
     errorHandlerMock = jest.fn();
-    storeUrlStub = sinon.stub(db, 'storeUrl').resolves({ slug: '2ud' });
-    sinon.stub(errors, 'handle').callsFake(() => errorHandlerMock);
+    storeUrlSpy = jest
+      .spyOn(db, 'storeUrl')
+      .mockImplementation(() => Promise.resolve({ slug: '2ud' }));
+    jest.spyOn(errors, 'handle').mockImplementation(() => errorHandlerMock);
     res = new Response();
   });
 
   afterEach(() => {
-    sinon.restore();
+    jest.restoreAllMocks();
   });
 
   it('calls storeUrl with url', async () => {
     const req = new Request({ body: { url: 'https://www.google.com' } });
     await shorten(req, res);
-    sinon.assert.calledWith(storeUrlStub, 'https://www.google.com');
+    expect(storeUrlSpy).toHaveBeenCalledWith('https://www.google.com');
   });
 
   it('sends a slugged link using url from the body', async () => {
     const req = new Request({ body: { url: 'https://www.google.com' } });
     await shorten(req, res);
     const { url } = JSON.parse(res.body);
-    expect(url).toBe(`${short}/2ud`);
+    expect(url).toBe(`${shortDomain}/2ud`);
   });
 
   it('sends a slugged link using url from the query', async () => {
     const req = new Request({ query: { url: 'https://www.google.com' } });
     await shorten(req, res);
     const { url } = JSON.parse(res.body);
-    expect(url).toBe(`${short}/2ud`);
+    expect(url).toBe(`${shortDomain}/2ud`);
   });
 
   it('sends a 400 error when no url is passed', async () => {
@@ -59,7 +60,7 @@ describe('shorten', () => {
 
   it('handles an application error', async () => {
     const testError = new Error('Test Error Message');
-    storeUrlStub.rejects(testError);
+    storeUrlSpy.mockImplementation(() => Promise.reject(testError));
     const req = new Request({ body: { url: 'https://www.google.com' } });
     await shorten(req, res);
     expect(errorHandlerMock).toHaveBeenCalledWith(testError);

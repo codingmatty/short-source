@@ -1,0 +1,77 @@
+const { Request, Response } = require('reqresnext');
+const ck = require('chronokinesis');
+
+const { defaultDestination, shortDomain } = require('../config');
+const sink = require('./sink');
+const errors = require('../helpers/errors');
+const initializeDb = require('../db/initialize');
+const db = initializeDb();
+
+describe('sink', () => {
+  let req, res, getUrlSpy, recordVisitSpy, errorHandlerMock;
+
+  beforeEach(() => {
+    errorHandlerMock = jest.fn();
+    getUrlSpy = jest
+      .spyOn(db, 'getUrl')
+      .mockImplementation(() => Promise.resolve());
+    recordVisitSpy = jest
+      .spyOn(db, 'recordVisit')
+      .mockImplementation(Promise.resolve);
+    jest.spyOn(errors, 'handle').mockImplementation(() => errorHandlerMock);
+    req = new Request({ url: `${shortDomain}/2ud` });
+    req.app.set = jest.fn();
+    req.app.enable = jest.fn();
+    res = new Response();
+    res.redirect = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('sets app variable [case sensitive routing]', async () => {
+    await sink(req, res);
+    expect(req.app.set).toBeCalledWith('case sensitive routing', true);
+  });
+
+  it('enables [trust proxy]', async () => {
+    await sink(req, res);
+    expect(req.app.enable).toBeCalledWith('trust proxy');
+  });
+
+  it('calls getUrl with path', async () => {
+    await sink(req, res);
+    expect(getUrlSpy).toHaveBeenCalledWith('2ud');
+  });
+
+  it('redirects to default destination', async () => {
+    await sink(req, res);
+    expect(res.redirect).toHaveBeenCalledWith(defaultDestination);
+  });
+
+  it('redirects to provided url', async () => {
+    getUrlSpy.mockImplementation(() =>
+      Promise.resolve('https://www.google.com')
+    );
+    await sink(req, res);
+    expect(res.redirect).toHaveBeenCalledWith('https://www.google.com');
+  });
+
+  it('calls records the visit', async () => {
+    ck.freeze();
+    await sink(req, res);
+    expect(recordVisitSpy).toHaveBeenCalledWith({
+      date: new Date().toISOString(),
+      slug: '2ud',
+      url: 'https://www.matthewjacobs.io',
+      userAgent: {
+        browser: { major: '537', name: 'WebKit', version: '537.36' },
+        engine: { name: 'WebKit', version: '537.36' },
+        ua:
+          'Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/11.6.2'
+      }
+    });
+    ck.reset();
+  });
+});

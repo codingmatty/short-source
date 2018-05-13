@@ -6,7 +6,6 @@ const groupBy = require('lodash/groupBy');
 const mapValues = require('lodash/mapValues');
 const uaParser = require('ua-parser-js');
 
-const config = require('../config');
 const logger = require('../helpers/logger');
 const initializeDb = require('../db/initialize');
 const { getVisits } = initializeDb();

@@ -1,64 +1,66 @@
 const flatten = require('flat');
 const geoip = require('geoip-lite');
+const moment = require('moment');
 const uaParser = require('ua-parser-js');
 
 const config = require('../config');
+const errors = require('../helpers/errors');
 const logger = require('../helpers/logger');
 const initializeDb = require('../db/initialize');
-const { getUrl, recordVisit } = initializeDb();
+const db = initializeDb();
 
 function sink(req, res) {
   req.app.set('case sensitive routing', true);
   req.app.enable('trust proxy'); // For the IP
 
-  const path = req.path.slice(1);
+  const { headers, ip, path, query } = req;
 
-  if (!path) {
-    res.redirect(config.default);
-    return;
-  }
+  const slug = path.slice(1);
 
-  getUrl(path)
+  return db
+    .getUrl(slug)
     .then((url) => {
-      const urlToRedirectTo = url || config.default;
+      const urlToRedirectTo = url || config.defaultDestination;
       res.redirect(urlToRedirectTo);
       return urlToRedirectTo;
     })
-    .then((urlToRedirectTo) => {
-      const { query, ip } = req;
-      const location = geoip.lookup(ip);
+    .then(recordVisitForUrl({ headers, ip, query, slug }))
+    .catch(errors.handle(res));
+}
 
-      const ua = req.headers['user-agent'];
-      const userAgent = uaParser(ua);
+function recordVisitForUrl({ headers, ip, query, slug }) {
+  return (url) => {
+    const location = geoip.lookup(ip);
 
-      const visitData = {
-        date: new Date().toISOString(),
-        ip,
-        location,
-        path,
-        query,
-        url: urlToRedirectTo,
-        userAgent
-      };
-      const flattenedData = flatten(visitData);
+    const ua = headers['user-agent'];
+    const userAgent = uaParser(ua);
 
-      logger.log('Data to Record: ', flattenedData);
+    const visitData = {
+      date: moment()
+        .toDate()
+        .toISOString(),
+      ip,
+      location,
+      query,
+      slug,
+      url,
+      userAgent
+    };
+    const flattenedData = flatten(visitData);
 
-      const recordData = flatten.unflatten(
-        Object.keys(flattenedData).reduce((obj, key) => {
-          if (flattenedData[key]) {
-            obj[key] = flattenedData[key];
-          }
-          return obj;
-        }, {})
-      );
+    logger.log('Data to Record: ', flattenedData);
 
-      recordVisit(recordData);
-    })
-    .catch((error) => {
-      logger.error(error);
-      res.status(500).send({ error: error.message || error });
-    });
+    const filteredData = Object.keys(flattenedData).reduce((obj, key) => {
+      if (flattenedData[key]) {
+        obj[key] = flattenedData[key];
+      }
+      return obj;
+    }, {});
+
+    const recordData = flatten.unflatten(filteredData);
+
+    return db.recordVisit(recordData);
+  };
 }
 
 module.exports = sink;

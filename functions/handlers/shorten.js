@@ -19,7 +19,7 @@ function shorten(req, res) {
   return db
     .storeUrl(url)
     .then(({ slug }) => {
-      res.send({ url: `${config.short}/${slug}` });
+      res.send({ url: `${config.shortDomain}/${slug}` });
     })
     .catch(errors.handle(res));
 }
