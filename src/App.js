@@ -1,23 +1,39 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { View, Text, StyleSheet } from 'react-native';
 
-import ShortenForm from './components/ShortenForm';
-import SlugStats from './components/SlugStats';
-
-import './app.css';
-
-class App extends Component {
+export default class App extends Component {
   render() {
     return (
-      <Router basename="/app">
-        <div className="app">
-          <Route exact path="/" render={() => 'home'} />
-          <Route path="/shorten" component={ShortenForm} />
-          <Route path="/stats/:slug" component={SlugStats} />
-        </div>
-      </Router>
+      <View style={styles.app}>
+        <View style={styles.appHeader}>
+          <Text style={styles.appTitle}>Welcome to My World! ⚛️</Text>
+        </View>
+        <Text style={styles.appIntro}>
+          To get started, edit src/App.js and save to reload.
+        </Text>
+      </View>
     );
   }
 }
 
-export default App;
+const styles = StyleSheet.create({
+  app: {
+    flex: 1
+  },
+  appHeader: {
+    flex: 1,
+    backgroundColor: '#222',
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  appTitle: {
+    fontSize: 16,
+    color: 'white'
+  },
+  appIntro: {
+    flex: 2,
+    fontSize: 30,
+    textAlign: 'center'
+  }
+});
