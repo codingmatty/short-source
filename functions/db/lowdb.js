@@ -5,20 +5,21 @@ const { encode } = require('../helpers/hasher');
 
 const adapter = new FileSync('db.json');
 const db = low(adapter);
-db.defaults({ links: [], visits: [] }).write();
-
 const INDEX_BASE = 5000;
-let index = INDEX_BASE;
+
+db.defaults({ links: [], visits: [], index: INDEX_BASE }).write();
 
 function storeUrl(url) {
+  const index = db.get('index').value();
   const link = {
     url,
-    slug: encode(index++)
+    slug: encode(index)
   };
   db
     .get('links')
     .push(link)
     .write();
+  db.set('index', index + 1).write();
   return Promise.resolve(link);
 }
 
