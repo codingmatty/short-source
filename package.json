@@ -13,6 +13,10 @@
     "recharts": "^1.0.0-beta.10"
   },
   "devDependencies": {
+    "babel-jest": "^22.4.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "chronokinesis": "^1.3.2",
     "husky": "^0.14.3",
     "jest": "^22.2.2",
@@ -21,6 +25,7 @@
     "nodemon": "^1.17.1",
     "npm-run-all": "^4.1.2",
     "prettier": "^1.11.1",
+    "react-test-renderer": "^16.3.2",
     "rename-cli": "^5.0.0"
   },
   "scripts": {
@@ -41,6 +46,25 @@
     "eject": "react-scripts eject",
     "clean": "rimraf src/**/*.css build",
     "precommit": "lint-staged"
+  },
+  "jest": {
+    "projects": [
+      {
+        "displayName": "app",
+        "testMatch": [
+          "<rootDir>/src/**/*.test.js"
+        ],
+        "moduleNameMapper": {
+          "\\.(css|less)$": "<rootDir>/src/styleMock.js"
+        }
+      },
+      {
+        "displayName": "functions",
+        "testMatch": [
+          "<rootDir>/functions/**/*.test.js"
+        ]
+      }
+    ]
   },
   "proxy": {
     "/api": {
