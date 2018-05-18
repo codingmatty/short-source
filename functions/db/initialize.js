@@ -11,7 +11,7 @@ function initializeDb() {
   } else if (isDev) {
     db = require('./lowdb');
   } else {
-    db = require('./firstore');
+    db = require('./firestore');
   }
   return db;
 }
