@@ -19,7 +19,10 @@ describe('sink', () => {
       .spyOn(db, 'recordVisit')
       .mockImplementation(Promise.resolve);
     jest.spyOn(errors, 'handle').mockImplementation(() => errorHandlerMock);
-    req = new Request({ url: `${shortDomain}/2ud` });
+    req = new Request({
+      url: `${shortDomain}/2ud`,
+      originalUrl: '/2ud?a=1&b=2'
+    });
     req.app.set = jest.fn();
     req.app.enable = jest.fn();
     res = new Response();
@@ -47,7 +50,9 @@ describe('sink', () => {
 
   it('redirects to default destination', async () => {
     await sink(req, res);
-    expect(res.redirect).toHaveBeenCalledWith(defaultDestination);
+    expect(res.redirect).toHaveBeenCalledWith(
+      'https://www.matthewjacobs.io/2ud?a=1&b=2'
+    );
   });
 
   it('redirects to provided url', async () => {
@@ -64,7 +69,7 @@ describe('sink', () => {
     expect(recordVisitSpy).toHaveBeenCalledWith({
       date: new Date().toISOString(),
       slug: '2ud',
-      url: 'https://www.matthewjacobs.io',
+      url: 'https://www.matthewjacobs.io/2ud?a=1&b=2',
       userAgent: {
         browser: { major: '537', name: 'WebKit', version: '537.36' },
         engine: { name: 'WebKit', version: '537.36' },

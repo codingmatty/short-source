@@ -13,14 +13,15 @@ function sink(req, res) {
   req.app.set('case sensitive routing', true);
   req.app.enable('trust proxy'); // For the IP
 
-  const { headers, ip, path, query } = req;
+  const { headers, ip, path, query, originalUrl } = req;
 
   const slug = path.slice(1);
 
   return db
     .getUrl(slug)
     .then((url) => {
-      const urlToRedirectTo = url || config.defaultDestination;
+      const urlToRedirectTo =
+        url || `${config.defaultDestination}${originalUrl}`;
       res.redirect(urlToRedirectTo);
       return urlToRedirectTo;
     })
