@@ -5,13 +5,14 @@ const INDEX_BASE = 5000;
 
 const db = admin.firestore();
 
+const counter = db.collection('counter');
 const links = db.collection('links');
 const visits = db.collection('visits');
 
 const getCounter = ({ increment = true } = {}) => {
   return db.runTransaction((transaction) =>
     transaction
-      .get(links.doc('_counter'))
+      .get(counter.doc('value'))
       .then((doc) => {
         if (doc.exists) {
           const { value } = doc.data();
@@ -47,6 +48,10 @@ function findLink(path) {
     .then((doc) => doc.exists && doc.data().url);
 }
 
+function getLinks() {
+  return links.get().then((doc) => doc.data());
+}
+
 function recordVisit(data) {
   return visits.add(data);
 }
@@ -62,6 +67,7 @@ module.exports = {
   getIndex,
   storeLink,
   findLink,
+  getLinks,
   recordVisit,
   getVisits
 };

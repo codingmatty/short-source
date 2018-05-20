@@ -22,6 +22,10 @@ function findLink(path) {
   return Promise.resolve(link ? link.url : '');
 }
 
+function getLinks(query) {
+  return Promise.resolve(links);
+}
+
 function recordVisit(data) {
   visits.push(data);
 }
@@ -34,6 +38,7 @@ module.exports = {
   getIndex,
   storeLink,
   findLink,
+  getLinks,
   recordVisit,
   getVisits
 };

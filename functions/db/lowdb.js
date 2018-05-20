@@ -33,6 +33,11 @@ function findLink(path) {
   return Promise.resolve(link ? link.url : '');
 }
 
+function getLinks(query) {
+  const links = db.get('links').value();
+  return Promise.resolve(links);
+}
+
 function recordVisit(data) {
   db
     .get('visits')
@@ -53,6 +58,7 @@ module.exports = {
   getIndex,
   storeLink,
   findLink,
+  getLinks,
   recordVisit,
   getVisits
 };
