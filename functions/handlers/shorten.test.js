@@ -7,13 +7,16 @@ const initializeDb = require('../db/initialize');
 const db = initializeDb();
 
 describe('shorten', () => {
-  let res, storeUrlSpy, errorHandlerMock;
+  let res, getIndexSpy, storeLinkSpy, errorHandlerMock;
 
   beforeEach(() => {
     errorHandlerMock = jest.fn();
-    storeUrlSpy = jest
-      .spyOn(db, 'storeUrl')
-      .mockImplementation(() => Promise.resolve({ slug: '2ud' }));
+    getIndexSpy = jest
+      .spyOn(db, 'getIndex')
+      .mockImplementation(() => Promise.resolve(5000));
+    storeLinkSpy = jest
+      .spyOn(db, 'storeLink')
+      .mockImplementation((link) => Promise.resolve(link));
     jest.spyOn(errors, 'handle').mockImplementation(() => errorHandlerMock);
     res = new Response();
   });
@@ -25,7 +28,10 @@ describe('shorten', () => {
   it('calls storeUrl with url', async () => {
     const req = new Request({ body: { url: 'https://www.google.com' } });
     await shorten(req, res);
-    expect(storeUrlSpy).toHaveBeenCalledWith('https://www.google.com');
+    expect(storeLinkSpy).toHaveBeenCalledWith({
+      slug: '2ud',
+      url: 'https://www.google.com'
+    });
   });
 
   it('sends a slugged link using url from the body', async () => {
@@ -60,7 +66,7 @@ describe('shorten', () => {
 
   it('handles an application error', async () => {
     const testError = new Error('Test Error Message');
-    storeUrlSpy.mockImplementation(() => Promise.reject(testError));
+    storeLinkSpy.mockImplementation(() => Promise.reject(testError));
     const req = new Request({ body: { url: 'https://www.google.com' } });
     await shorten(req, res);
     expect(errorHandlerMock).toHaveBeenCalledWith(testError);

@@ -1,21 +1,23 @@
-const { encode } = require('../helpers/hasher');
-
 const links = [];
 const visits = [];
 
 const INDEX_BASE = 5000;
-let index = INDEX_BASE;
+let dbIndex = INDEX_BASE;
 
-function storeUrl(url) {
-  const link = {
-    url,
-    slug: encode(index++)
-  };
+function getIndex({ increment = true } = {}) {
+  const index = dbIndex;
+  if (increment) {
+    dbIndex++;
+  }
+  return Promise.resolve(index);
+}
+
+function storeLink(link) {
   links.push(link);
   return Promise.resolve(link);
 }
 
-function getUrl(path) {
+function findLink(path) {
   const link = links.find(({ slug }) => slug === path);
   return Promise.resolve(link ? link.url : '');
 }
@@ -29,8 +31,9 @@ function getVisits(slug) {
 }
 
 module.exports = {
-  storeUrl,
-  getUrl,
+  getIndex,
+  storeLink,
+  findLink,
   recordVisit,
   getVisits
 };

@@ -8,12 +8,12 @@ const initializeDb = require('../db/initialize');
 const db = initializeDb();
 
 describe('sink', () => {
-  let req, res, getUrlSpy, recordVisitSpy, errorHandlerMock;
+  let req, res, findLinkSpy, recordVisitSpy, errorHandlerMock;
 
   beforeEach(() => {
     errorHandlerMock = jest.fn();
-    getUrlSpy = jest
-      .spyOn(db, 'getUrl')
+    findLinkSpy = jest
+      .spyOn(db, 'findLink')
       .mockImplementation(() => Promise.resolve());
     recordVisitSpy = jest
       .spyOn(db, 'recordVisit')
@@ -43,9 +43,9 @@ describe('sink', () => {
     expect(req.app.enable).toBeCalledWith('trust proxy');
   });
 
-  it('calls getUrl with path', async () => {
+  it('calls findLink with path', async () => {
     await sink(req, res);
-    expect(getUrlSpy).toHaveBeenCalledWith('2ud');
+    expect(findLinkSpy).toHaveBeenCalledWith('2ud');
   });
 
   it('redirects to default destination', async () => {
@@ -56,7 +56,7 @@ describe('sink', () => {
   });
 
   it('redirects to provided url', async () => {
-    getUrlSpy.mockImplementation(() =>
+    findLinkSpy.mockImplementation(() =>
       Promise.resolve('https://www.google.com')
     );
     await sink(req, res);

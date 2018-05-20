@@ -18,7 +18,7 @@ function sink(req, res) {
   const slug = path.slice(1);
 
   return db
-    .getUrl(slug)
+    .findLink(slug)
     .then((url) => {
       const urlToRedirectTo =
         url || `${config.defaultDestination}${originalUrl}`;

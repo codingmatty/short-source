@@ -1,5 +1,6 @@
 const config = require('../config');
 const errors = require('../helpers/errors');
+const { encode } = require('../helpers/hasher');
 const initializeDb = require('../db/initialize');
 const db = initializeDb();
 
@@ -17,7 +18,12 @@ function shorten(req, res) {
   }
 
   return db
-    .storeUrl(url)
+    .getIndex()
+    .then((index) => ({
+      url,
+      slug: encode(index)
+    }))
+    .then(db.storeLink)
     .then(({ slug }) => {
       res.send({ url: `${config.shortDomain}/${slug}` });
     })

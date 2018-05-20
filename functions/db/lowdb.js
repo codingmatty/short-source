@@ -9,21 +9,23 @@ const INDEX_BASE = 5000;
 
 db.defaults({ links: [], visits: [], index: INDEX_BASE }).write();
 
-function storeUrl(url) {
+function getIndex({ increment = true } = {}) {
   const index = db.get('index').value();
-  const link = {
-    url,
-    slug: encode(index)
-  };
+  if (increment) {
+    db.set('index', index + 1).write();
+  }
+  return Promise.resolve(index);
+}
+
+function storeLink(link) {
   db
     .get('links')
     .push(link)
     .write();
-  db.set('index', index + 1).write();
   return Promise.resolve(link);
 }
 
-function getUrl(path) {
+function findLink(path) {
   const link = db
     .get('links')
     .find({ slug: path })
@@ -48,8 +50,9 @@ function getVisits(slug) {
 }
 
 module.exports = {
-  storeUrl,
-  getUrl,
+  getIndex,
+  storeLink,
+  findLink,
   recordVisit,
   getVisits
 };
