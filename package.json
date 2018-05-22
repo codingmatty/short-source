@@ -35,7 +35,7 @@
     "dev:scripts": "react-scripts start",
     "dev:web": "npm-run-all -p dev:css dev:scripts",
     "serve": "firebase serve --only functions",
-    "dev": "npm-run-all -p dev fb:serve",
+    "dev": "npm-run-all -p dev:web serve",
     "build:css": "node-sass src/ -o src/",
     "build:scripts": "react-scripts build",
     "build": "npm-run-all build:css build:scripts",
