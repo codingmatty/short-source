@@ -7,7 +7,12 @@ function links(req, res) {
   return db
     .getLinks(req.query)
     .then((links) => {
-      res.send({ links });
+      res.send({
+        links: links.map((link) => ({
+          shortUrl: `${config.shortDomain}/${link.slug}`,
+          ...link
+        }))
+      });
     })
     .catch(errors.handle(res));
 }
