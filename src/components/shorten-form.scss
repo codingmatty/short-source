@@ -1,8 +1,9 @@
 .shorten-form {
   background-color: #ccc;
   min-width: 50%;
-  margin: 0 5%;
+  margin: 100px 5% 0;
   padding: 50px;
+  display: block;
 
   &__label {
     display: block;

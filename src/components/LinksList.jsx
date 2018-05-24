@@ -1,42 +1,51 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import autobind from 'react-autobind';
+
+import Loading from './Loading';
+import Fetch from './Fetch';
 
 // import './links-list.css';
 
 class LinksList extends Component {
-  state = { links: [], error: null };
+  static defaultProps = {
+    onListUpdate: () => {}
+  };
 
-  constructor() {
-    super();
-    autobind(this);
+  state = { links: [], refetchKey: Date.now() };
+
+  componentWillReceiveProps({ shouldRefetch }) {
+    if (shouldRefetch) {
+      this.setState({ refetchKey: Date.now() });
+    }
   }
 
-  componentDidMount() {
-    this.fetchLinks();
-  }
-
-  fetchLinks() {
-    fetch('/api/links')
-      .then((res) => {
-        if (!res.ok) {
-          return res.json().then((err) => Promise.reject(err));
-        }
-        return res.json();
-      })
-      .then(({ links }) => this.setState({ links, error: null }))
-      .catch(({ error }) => this.setState({ error }));
-  }
+  onSuccess = ({ links }) => {
+    const { onListUpdate } = this.props;
+    this.setState({ links });
+    onListUpdate();
+  };
 
   render() {
-    const { links } = this.state;
+    const { links, refetchKey } = this.state;
+
     return (
-      <ul>
-        {links.map((link) => (
-          <li>
-            {link.slug}: {link.url}
-          </li>
-        ))}
-      </ul>
+      <div className="links-list">
+        <Fetch
+          url="/api/links"
+          refetchKey={refetchKey}
+          onSuccess={this.onSuccess}
+          renderLoading={() => <Loading />}
+        />
+        {!!links.length && (
+          <ul>
+            {links.map((link) => (
+              <li key={link.slug}>
+                {link.createdAt}: {link.slug}: {link.url}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     );
   }
 }

@@ -21,7 +21,9 @@ function shorten(req, res) {
     .getIndex()
     .then((index) => ({
       url,
-      slug: encode(index)
+      slug: encode(index),
+      createdAt: Date.now(),
+      updatedAt: Date.now()
     }))
     .then(db.storeLink)
     .then(({ slug }) => {

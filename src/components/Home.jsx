@@ -1,19 +1,47 @@
 import React, { Component, Fragment } from 'react';
+import { withStatechart } from 'react-automata';
 
 // import './home.css';
 import ShortenForm from './ShortenForm';
 import LinksList from './LinksList';
 
 class Home extends Component {
+  state = { shouldUpdateList: false };
+
+  componentWillTransition(event) {
+    this.setState({ shouldUpdateList: event === 'SHORTEN' });
+  }
+
   render() {
-    console.log('poop');
+    const { transition } = this.props;
+    const { shouldUpdateList } = this.state;
+
     return (
       <Fragment>
-        <ShortenForm />
-        <LinksList />
+        <ShortenForm onShorten={() => transition('SHORTEN')} />
+        <LinksList
+          shouldRefetch={shouldUpdateList}
+          onListUpdate={() => transition('LIST_UPDATED')}
+        />
       </Fragment>
     );
   }
 }
 
-export default Home;
+const statechart = {
+  initial: 'initial',
+  states: {
+    initial: {
+      on: {
+        SHORTEN: 'updateList'
+      }
+    },
+    updateList: {
+      on: {
+        LIST_UPDATED: 'initial'
+      }
+    }
+  }
+};
+
+export default withStatechart(statechart)(Home);
