@@ -1,0 +1,12 @@
+.links-list {
+  margin: 0 auto;
+  width: 90%;
+
+  &__item {
+    padding: 3px 0 0;
+
+    &__card {
+      width: 100%;
+    }
+  }
+}

@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { Action, withStatechart } from 'react-automata';
 
+import Paper from '@material-ui/core/Paper';
+
 import Fetch from './Fetch';
 
 import './shorten-form.css';
@@ -17,9 +19,9 @@ class ShortenForm extends Component {
     const { shortUrl, error } = this.state;
 
     return (
-      <Fragment>
+      <Paper className="shorten-form">
         <form
-          className="shorten-form"
+          className="shorten-form__form"
           onSubmit={(e) => {
             e.preventDefault();
             transition('SUBMIT');
@@ -65,7 +67,7 @@ class ShortenForm extends Component {
             }
           />
         </Action>
-      </Fragment>
+      </Paper>
     );
   }
 }

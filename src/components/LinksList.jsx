@@ -1,10 +1,24 @@
 import React, { Component, Fragment } from 'react';
 import autobind from 'react-autobind';
 
+import { withStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+
 import Loading from './Loading';
 import Fetch from './Fetch';
 
-// import './links-list.css';
+import './links-list.css';
+
+const styles = {
+  listItem: {
+    paddingBottom: 0,
+    paddingTop: 3
+  }
+};
 
 class LinksList extends Component {
   static defaultProps = {
@@ -26,6 +40,7 @@ class LinksList extends Component {
   };
 
   render() {
+    const { classes } = this.props;
     const { links, refetchKey } = this.state;
 
     return (
@@ -37,17 +52,24 @@ class LinksList extends Component {
           renderLoading={() => <Loading />}
         />
         {!!links.length && (
-          <ul>
+          <List>
             {links.map((link) => (
-              <li key={link.slug}>
-                {link.createdAt}: {link.slug}: {link.url}
-              </li>
+              <ListItem key={link.slug} className="links-list__item">
+                <Card className="links-list__item__card">
+                  <CardContent>
+                    <ListItemText
+                      primary={link.shortUrl}
+                      secondary={link.url}
+                    />
+                  </CardContent>
+                </Card>
+              </ListItem>
             ))}
-          </ul>
+          </List>
         )}
       </div>
     );
   }
 }
 
-export default LinksList;
+export default withStyles(styles)(LinksList);

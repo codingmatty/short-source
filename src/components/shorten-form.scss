@@ -1,8 +1,7 @@
 .shorten-form {
-  background-color: #ccc;
-  min-width: 50%;
-  margin: 100px 5% 0;
-  padding: 50px;
+  width: calc(95% - 48px);
+  margin: 100px auto 0;
+  padding: 50px 24px;
   display: block;
 
   &__label {
