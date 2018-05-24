@@ -1,6 +1,7 @@
 const geoip = require('geoip-lite');
 const flatten = require('flat');
 const moment = require('moment');
+const get = require('lodash/get');
 const countBy = require('lodash/countBy');
 const groupBy = require('lodash/groupBy');
 const mapValues = require('lodash/mapValues');
@@ -38,7 +39,7 @@ function formatVisitsData(visits, utcOffset) {
         break;
       default:
         // Only set the key _iff_ there is data on at least one of the visits
-        if (visits.some((visit) => visit[key]).length > 0) {
+        if (visits.some((visit) => get(visit, key))) {
           obj[key] = countBy(visits, key);
         }
     }
@@ -51,8 +52,6 @@ function stats(req, res) {
 
   getVisits(slug)
     .then((visits) => {
-      const flattenedVisitData = visits.map((visit) => flatten(visit));
-
       const counts = [
         'ip',
         'date.date',
@@ -63,7 +62,7 @@ function stats(req, res) {
         'location.zip',
         'userAgent.browser.name',
         'userAgent.os.name'
-      ].reduce(formatData(flattenedVisitData, utcOffset), {});
+      ].reduce(formatVisitsData(visits, utcOffset), {});
 
       res.send(counts);
     })

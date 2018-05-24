@@ -48,9 +48,8 @@ function recordVisit(data) {
 function getVisits(slug) {
   const visits = db
     .get('visits')
-    .filter({ path: slug })
+    .filter({ slug })
     .value();
-  console.log('visits: ', visits);
   return Promise.resolve(visits);
 }
 
