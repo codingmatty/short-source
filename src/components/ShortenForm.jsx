@@ -15,8 +15,7 @@ class ShortenForm extends Component {
   state = { url: '' };
 
   render() {
-    const { onShorten, transition } = this.props;
-    const { shortUrl, error } = this.state;
+    const { onShorten, transition, shortUrl, error } = this.props;
 
     return (
       <Paper className="shorten-form">
@@ -55,16 +54,12 @@ class ShortenForm extends Component {
             body={{ url: this.state.url }}
             onLoad={() => console.log('loading...')}
             onError={({ error }) =>
-              this.setState({ error, shortUrl: null }, () =>
-                transition('COMPLETE')
-              )
+              transition('COMPLETE', { error, shortUrl: null })
             }
-            onSuccess={({ url }) =>
-              this.setState({ shortUrl: url, error: null }, () => {
-                transition('COMPLETE');
-                onShorten();
-              })
-            }
+            onSuccess={({ url }) => {
+              transition('COMPLETE', { shortUrl: url, error: null });
+              onShorten(url);
+            }}
           />
         </Action>
       </Paper>

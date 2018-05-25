@@ -5,11 +5,16 @@
 
   &__item {
     padding: 3px 0 0;
+    box-sizing: border-box;
 
     &__card {
       width: 100%;
       padding: 15px;
       display: flex;
+
+      &.new {
+        border-left: 3px solid violet;
+      }
 
       .chart-container {
         flex-basis: 30%;

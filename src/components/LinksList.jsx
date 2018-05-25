@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import React, { Component, Fragment } from 'react';
 import autobind from 'react-autobind';
 
@@ -65,7 +66,7 @@ class LinksList extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { newUrl } = this.props;
     const { links, refetchKey } = this.state;
 
     return (
@@ -81,7 +82,11 @@ class LinksList extends Component {
           <List>
             {links.map((link) => (
               <ListItem key={link.slug} className="links-list__item">
-                <Card className="links-list__item__card">
+                <Card
+                  className={classnames('links-list__item__card', {
+                    new: newUrl === link.shortUrl
+                  })}
+                >
                   <ListItemText primary={link.shortUrl} secondary={link.url} />
                   <div className="chart-container">
                     <div>Weekly Activity</div>

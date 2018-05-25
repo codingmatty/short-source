@@ -13,13 +13,16 @@ class Home extends Component {
   }
 
   render() {
-    const { transition } = this.props;
+    const { newUrl, transition } = this.props;
     const { shouldUpdateList } = this.state;
 
     return (
       <Fragment>
-        <ShortenForm onShorten={() => transition('SHORTEN')} />
+        <ShortenForm
+          onShorten={(newUrl) => transition('SHORTEN', { newUrl })}
+        />
         <LinksList
+          newUrl={newUrl}
           shouldRefetch={shouldUpdateList}
           onListUpdate={() => transition('LIST_UPDATED')}
         />
