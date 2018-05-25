@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import qs from 'qs';
 
 class Fetch extends Component {
   static defaultProps = {
@@ -29,7 +30,7 @@ class Fetch extends Component {
   componentDidMount() {
     this.unmounted = false;
     this.shouldFetch = true;
-    this.fetch()
+    this.fetch();
   }
 
   componentDidUpdate() {
@@ -44,6 +45,7 @@ class Fetch extends Component {
       onError,
       onLoad,
       onSuccess,
+      query,
       url
     } = this.props;
 
@@ -54,7 +56,9 @@ class Fetch extends Component {
 
     this.setState({ loading: true }, () => onLoad());
 
-    fetch(url, {
+    const fullUrl = url.includes('?') ? url : `${url}?${qs.stringify(query)}`;
+
+    fetch(fullUrl, {
       method,
       body: JSON.stringify(body),
       headers: new Headers({
@@ -68,11 +72,15 @@ class Fetch extends Component {
             ? response.json().then((error) => Promise.reject(error))
             : response.json()
       )
-      .then((data) =>
-        this.unmounted || this.setState({ data, loading: false }, () => onSuccess(data))
+      .then(
+        (data) =>
+          !this.unmounted &&
+          this.setState({ data, loading: false }, () => onSuccess(data))
       )
-      .catch((error) =>
-        this.unmounted || this.setState({ error, loading: false }, () => onError(error))
+      .catch(
+        (error) =>
+          !this.unmounted &&
+          this.setState({ error, loading: false }, () => onError(error))
       );
   };
 

@@ -1,12 +1,28 @@
 .links-list {
   margin: 0 auto;
   width: 90%;
+  max-width: 768px;
 
   &__item {
     padding: 3px 0 0;
 
     &__card {
       width: 100%;
+      padding: 15px;
+      display: flex;
+
+      .chart-container {
+        flex-basis: 30%;
+        height: 50px;
+        padding-top: 5px;
+        font-size: 11px;
+        text-align: center;
+        background-color: #eee;
+
+        &__chart {
+          height: calc(100% - 12px);
+        }
+      }
     }
   }
 }
