@@ -15,7 +15,7 @@ class ShortenForm extends Component {
   state = { url: '' };
 
   render() {
-    const { onShorten, transition, shortUrl, error } = this.props;
+    const { onShorten, transition, error } = this.props;
 
     return (
       <Paper className="shorten-form">
@@ -36,16 +36,8 @@ class ShortenForm extends Component {
             className="shorten-form__input"
             onChange={({ target }) => this.setState({ url: target.value })}
           />
-          <button className="shorten-form__submit">Submit</button>
-          {shortUrl && (
-            <p className="shorten-form__result">
-              The resulting URL is:{' '}
-              <a href={shortUrl} rel="noopener noreferrer" target="_blank">
-                {shortUrl}
-              </a>
-            </p>
-          )}
           {error && <p className="shorten-form__error">{error}</p>}
+          <button className="shorten-form__submit">Submit</button>
         </form>
         <Action show="submit">
           <Fetch
@@ -53,11 +45,9 @@ class ShortenForm extends Component {
             method="POST"
             body={{ url: this.state.url }}
             onLoad={() => console.log('loading...')}
-            onError={({ error }) =>
-              transition('COMPLETE', { error, shortUrl: null })
-            }
+            onError={({ error }) => transition('COMPLETE', { error })}
             onSuccess={({ url }) => {
-              transition('COMPLETE', { shortUrl: url, error: null });
+              transition('COMPLETE', { error: null });
               onShorten(url);
             }}
           />
