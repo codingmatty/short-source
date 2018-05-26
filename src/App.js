@@ -25,7 +25,9 @@ class App extends Component {
           <div className="app">
             <AppBar>
               <Toolbar>
-                <Typography variant="headline">Moniker</Typography>
+                <Typography variant="headline" style={{ color: 'white' }}>
+                  Moniker
+                </Typography>
               </Toolbar>
             </AppBar>
             <Route exact strict path="/" component={Home} />
