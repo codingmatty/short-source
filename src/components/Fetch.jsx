@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import qs from 'qs';
 
+// import authentication from '../helpers/authentication';
+
+import { AuthConsumer } from './Authentication';
+
 class Fetch extends Component {
   static defaultProps = {
     onLoad: () => {},
@@ -40,13 +44,14 @@ class Fetch extends Component {
   fetch = () => {
     const {
       body,
-      headers,
+      headers = {},
       method,
       onError,
       onLoad,
       onSuccess,
       query,
-      url
+      url,
+      authToken
     } = this.props;
 
     if (!this.shouldFetch) {
@@ -57,6 +62,13 @@ class Fetch extends Component {
     this.setState({ loading: true }, () => onLoad());
 
     const fullUrl = url.includes('?') ? url : `${url}?${qs.stringify(query)}`;
+
+    // const authToken =
+    // authentication.isAuthenticated() && authentication.authToken;
+    console.log('authToken: ', authToken);
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
 
     fetch(fullUrl, {
       method,
@@ -97,4 +109,10 @@ class Fetch extends Component {
   }
 }
 
-export default Fetch;
+export default (props) => (
+  <AuthConsumer>
+    {({ isAuthenticated, authToken }) => (
+      <Fetch {...props} authToken={isAuthenticated() && authToken} />
+    )}
+  </AuthConsumer>
+);
