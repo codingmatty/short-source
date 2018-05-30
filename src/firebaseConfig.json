@@ -1,0 +1,8 @@
+{
+  "apiKey": "AIzaSyAMq6Y6hYG3rIEsRG6U8SY2qwT3dE0bBl8",
+  "authDomain": "moniker-app.firebaseapp.com",
+  "databaseURL": "https://moniker-app.firebaseio.com",
+  "projectId": "moniker-app",
+  "storageBucket": "moniker-app.appspot.com",
+  "messagingSenderId": "5433795506"
+}

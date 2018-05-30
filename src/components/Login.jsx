@@ -1,116 +1,61 @@
-// import React, { Component } from 'react';
-import { Route, Link, Redirect, withRouter } from 'react-router-dom';
-
-// import authentication from '../helpers/authentication';
-
-// class Login extends Component {
-//   state = {
-//     redirectToReferrer: false
-//   };
-
-//   login = () => {
-//     authentication.authenticate(() => {
-//       this.setState({ redirectToReferrer: true });
-//     });
-//   };
-
-//   render() {
-//     const { location } = this.props;
-//     const { from = {} } = location.state;
-//     const { pathname = '/' } = from;
-//     const { redirectToReferrer } = this.state;
-
-//     if (redirectToReferrer) {
-//       return <Redirect to={{ pathname }} />;
-//     }
-
-//     return (
-//       <div>
-//         <p>You must log in to view the page at {pathname}</p>
-//         <button onClick={this.login}>Log in</button>
-//       </div>
-//     );
-//   }
-// }
-
-// export default Login;
-
+import get from 'lodash/get';
 import React, { Component } from 'react';
+import { Route, Link, Redirect, withRouter } from 'react-router-dom';
 
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 
-import './firebaseui-styling.global.css'; // Import globally.
+import firbaseConfig from '../firebaseConfig';
 
-import { AuthConsumer } from './Authentication';
+import Authentication from './Authentication';
 
-// Instantiate a Firebase app.
-const firebaseApp = firebase.initializeApp({
-  apiKey: 'AIzaSyAMq6Y6hYG3rIEsRG6U8SY2qwT3dE0bBl8',
-  authDomain: 'moniker-app.firebaseapp.com',
-  // databaseURL: "https://<DATABASE_NAME>.firebaseio.com",
-  projectId: 'moniker-app'
-  // storageBucket: "<BUCKET>.appspot.com",
-  // messagingSenderId: "<SENDER_ID>",
-});
+const firebaseApp = firebase.initializeApp(firbaseConfig);
 
-/**
- * The Splash Page containing the login UI.
- */
+const uiConfig = {
+  signInFlow: 'popup',
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    firebase.auth.EmailAuthProvider.PROVIDER_ID
+  ],
+  callbacks: {
+    signInSuccessWithAuthResult: () => false
+  }
+};
+
 class Login extends Component {
-  uiConfig = {
-    signInFlow: 'popup',
-    signInOptions: [
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      firebase.auth.EmailAuthProvider.PROVIDER_ID
-    ],
-    callbacks: {
-      signInSuccessWithAuthResult: () => false
-    }
-  };
-
   state = {
-    isSignedIn: undefined
+    isSignedIn: false
   };
 
-  /**
-   * @inheritDoc
-   */
   componentDidMount() {
     this.unregisterAuthObserver = firebaseApp
       .auth()
-      .onAuthStateChanged(async (user) => {
-        await this.props.onAuthenticate(user);
-        this.setState({ isSignedIn: !!user });
+      .onAuthStateChanged((user) => {
+        user.getIdToken().then((authToken) => {
+          this.props.onAuthenticate(user, authToken);
+          this.setState({ isSignedIn: !!user });
+        });
       });
   }
 
-  /**
-   * @inheritDoc
-   */
   componentWillUnmount() {
     this.unregisterAuthObserver();
   }
 
-  /**
-   * @inheritDoc
-   */
   render() {
     const { location } = this.props;
-    const { from = {} } = location.state || {};
-    const { pathname = '/' } = from;
     const { isSignedIn } = this.state;
 
     if (isSignedIn) {
+      const pathname = get(location, 'state.from.pathname', '/');
       return <Redirect to={{ pathname }} />;
     }
 
     return (
       <div style={{ marginTop: 80 }}>
         <StyledFirebaseAuth
-          // className={styles.firebaseUi}
-          uiConfig={this.uiConfig}
+          uiConfig={uiConfig}
           firebaseAuth={firebaseApp.auth()}
         />
       </div>
@@ -118,8 +63,10 @@ class Login extends Component {
   }
 }
 
-export default (props) => (
-  <AuthConsumer>
+const LoginContainer = (props) => (
+  <Authentication.Consumer>
     {({ authenticate }) => <Login {...props} onAuthenticate={authenticate} />}
-  </AuthConsumer>
+  </Authentication.Consumer>
 );
+
+export default LoginContainer;

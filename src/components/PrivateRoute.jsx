@@ -1,36 +1,39 @@
 import React, { Component } from 'react';
 import { Route, Link, Redirect, withRouter } from 'react-router-dom';
 
-// import authentication from '../helpers/authentication';
-
-import { AuthConsumer } from './Authentication';
+import Authentication from './Authentication';
 
 class PrivateRoute extends Component {
-  render() {
-    const { component: Component, ...rest } = this.props;
-    console.log('poop');
+  renderRoute = (renderProps) => {
+    const { component: Component, isAuthenticated } = this.props;
+
+    if (isAuthenticated()) {
+      return <Component {...renderProps} />;
+    }
+
     return (
-      <AuthConsumer>
-        {({ isAuthenticated }) => (
-          <Route
-            {...rest}
-            render={(props) =>
-              isAuthenticated() ? (
-                <Component {...props} />
-              ) : (
-                <Redirect
-                  to={{
-                    pathname: '/login',
-                    state: { from: props.location }
-                  }}
-                />
-              )
-            }
-          />
-        )}
-      </AuthConsumer>
+      <Redirect
+        to={{
+          pathname: '/login',
+          state: { from: renderProps.location }
+        }}
+      />
     );
+  };
+
+  render() {
+    const { component: Component, ...props } = this.props;
+
+    return <Route {...props} render={this.renderRoute} />;
   }
 }
 
-export default PrivateRoute;
+const PrivateRouteContainer = (props) => (
+  <Authentication.Consumer>
+    {({ isAuthenticated }) => (
+      <PrivateRoute {...props} isAuthenticated={isAuthenticated} />
+    )}
+  </Authentication.Consumer>
+);
+
+export default PrivateRouteContainer;

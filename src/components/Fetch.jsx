@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import qs from 'qs';
 
-// import authentication from '../helpers/authentication';
-
-import { AuthConsumer } from './Authentication';
+import Authentication from './Authentication';
 
 class Fetch extends Component {
   static defaultProps = {
@@ -63,9 +61,6 @@ class Fetch extends Component {
 
     const fullUrl = url.includes('?') ? url : `${url}?${qs.stringify(query)}`;
 
-    // const authToken =
-    // authentication.isAuthenticated() && authentication.authToken;
-    console.log('authToken: ', authToken);
     if (authToken) {
       headers['Authorization'] = `Bearer ${authToken}`;
     }
@@ -78,17 +73,20 @@ class Fetch extends Component {
         ...headers
       })
     })
+      // Is The Response Okay? Is so continue with data
       .then(
         (response) =>
           !response.ok
             ? response.json().then((error) => Promise.reject(error))
             : response.json()
       )
+      // On Success, if the Component is not unmounted, set state and call onSuccess callback
       .then(
         (data) =>
           !this.unmounted &&
           this.setState({ data, loading: false }, () => onSuccess(data))
       )
+      // On Error, if the Component is not unmounted, set state and call onError callback
       .catch(
         (error) =>
           !this.unmounted &&
@@ -109,10 +107,12 @@ class Fetch extends Component {
   }
 }
 
-export default (props) => (
-  <AuthConsumer>
+const FetchContainer = (props) => (
+  <Authentication.Consumer>
     {({ isAuthenticated, authToken }) => (
       <Fetch {...props} authToken={isAuthenticated() && authToken} />
     )}
-  </AuthConsumer>
+  </Authentication.Consumer>
 );
+
+export default FetchContainer;
